@@ -27,7 +27,7 @@ class RecipeController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $imagePath = $request->file('image')?->store('recipes', 'public');
+        $imagePath = $request->file('image') ? $request->file('image')->store('recipes', 'public') : null;
 
         Recipe::create([
             'name' => $request->name,
