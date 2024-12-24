@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
     public function index()
     {
-        $recipes = Recipe::all();
-        return view('recipes.index', compact('recipes'));
+        $recipes = DB::table('recipes')->inRandomOrder()->limit(6)->get();
+        return view('index', ['recipes' => $recipes]);
     }
 
     public function create()
