@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cooking Recipes</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="shortcut icon" href="{{ asset('image/icon.png') }}" type="image/x-icon">
     <script src="{{ asset('js/theme.js') }}"></script>
 </head>

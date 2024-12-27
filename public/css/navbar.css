@@ -1,0 +1,49 @@
+/* Navbar Styles */
+header {
+    background-color: #333; 
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    transition: color 0.3s;
+}
+
+/* Hover Effect for Light Mode */
+.navbar a:hover {
+    color: #ff6347; 
+}
+
+.navbar button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Dark Mode Styling */
+body.dark header {
+    background-color: #1e1e1e;
+}
+
+body.dark .navbar a {
+    color: #ffffff;
+}
+
+/* Hover Effect for Dark Mode */
+body.dark .navbar a:hover {
+    color: #ff6347; /* Tetap gunakan warna hover yang sama */
+}

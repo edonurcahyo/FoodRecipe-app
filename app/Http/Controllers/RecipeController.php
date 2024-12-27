@@ -14,6 +14,12 @@ class RecipeController extends Controller
         return view('index', ['recipes' => $recipes]);
     }
 
+    public function home()
+    {
+        $recipes = DB::table('recipes')->get();
+        return view('home', ['recipes' => $recipes]);
+    }
+
     public function create()
     {
         return view('recipes.create');

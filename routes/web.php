@@ -28,3 +28,7 @@ Route::get('/register', function () {
     return view('auth.register');
 });
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/', [RecipeController::class, 'index'])->name('index');
+
+Route::get('/home', [RecipeController::class, 'home'])->middleware('auth')->name('home');
