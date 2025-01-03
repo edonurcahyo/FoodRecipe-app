@@ -20,6 +20,15 @@ class RecipeController extends Controller
         return view('home', ['recipes' => $recipes]);
     }
 
+    public function show($id)
+    {
+        $recipe = Recipe::find($id);
+        if (!$recipe) {
+            return redirect()->route('home')->with('error', 'Resep tidak ditemukan.');
+        }
+        return view('recipes.detail', ['recipe' => $recipe]);
+    }
+
     public function create()
     {
         return view('recipes.create');

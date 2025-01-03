@@ -32,3 +32,4 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/', [RecipeController::class, 'index'])->name('index');
 
 Route::get('/home', [RecipeController::class, 'home'])->middleware('auth')->name('home');
+Route::get('/detail-recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
