@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookmarkController;
+<<<<<<< HEAD
+use App\Http\Controllers\RecipeSearchController;
+=======
+>>>>>>> f6922a89a9b30e1a71882b9dbb59e050fab49e94
 
 /*
 |--------------------------------------------------------------------------
@@ -39,4 +43,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/bookmark/add', [BookmarkController::class, 'add'])->name('bookmark.add');
     Route::get('/bookmark', [BookmarkController::class, 'index'])->name('bookmark.index');
     Route::post('/bookmark/remove', [BookmarkController::class, 'remove'])->name('bookmark.remove');
+<<<<<<< HEAD
 });
+
+Route::get('/search-recipe', [RecipeSearchController::class, 'index'])->name('search-recipe');
+=======
+});
+>>>>>>> f6922a89a9b30e1a71882b9dbb59e050fab49e94
