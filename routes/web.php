@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookmarkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +34,9 @@ Route::get('/', [RecipeController::class, 'index'])->name('index');
 
 Route::get('/home', [RecipeController::class, 'home'])->middleware('auth')->name('home');
 Route::get('/detail-recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/bookmark/add', [BookmarkController::class, 'add'])->name('bookmark.add');
+    Route::get('/bookmark', [BookmarkController::class, 'index'])->name('bookmark.index');
+    Route::post('/bookmark/remove', [BookmarkController::class, 'remove'])->name('bookmark.remove');
+});
