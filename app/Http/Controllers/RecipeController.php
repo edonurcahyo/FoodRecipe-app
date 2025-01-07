@@ -12,14 +12,14 @@ class RecipeController extends Controller
     public function index()
     {
         $recipes = Recipe::inRandomOrder()->limit(6)->get();
-        return view('index', ['recipes' => $recipes]);
+        return view('index', compact('recipes'));
     }
 
     // Menampilkan halaman home dengan semua resep
     public function home()
     {
         $recipes = Recipe::all();
-        return view('home', ['recipes' => $recipes]);
+        return view('home', compact('recipes'));
     }
 
     // Menampilkan detail resep berdasarkan ID
@@ -31,7 +31,7 @@ class RecipeController extends Controller
             return redirect()->route('home')->with('error', 'Resep tidak ditemukan.');
         }
 
-        return view('recipes.detail', ['recipe' => $recipe]);
+        return view('recipes.detail', compact('recipe'));
     }
 
     // Menampilkan formulir tambah resep
@@ -44,7 +44,7 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'ingredients' => 'required|string',
@@ -60,17 +60,12 @@ class RecipeController extends Controller
             'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        // Upload gambar jika ada
-        $imagePath = $this->uploadImage($request);
-
-        // Simpan data ke database
-        Recipe::create([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'ingredients' => $request->input('ingredients'),
-            'instructions' => $request->input('instructions'),
-            'image_url' => $imagePath,
-        ]);
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('uploads', 'public');
+        } else {
+            $imagePath = null;
+        }
+        
 
         return redirect()->route('home')->with('success', 'Resep berhasil ditambahkan!');
     }
@@ -88,7 +83,7 @@ class RecipeController extends Controller
         $recipe = Recipe::findOrFail($id);
 
         // Validasi input
-        $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'ingredients' => 'required|string',
@@ -99,19 +94,13 @@ class RecipeController extends Controller
         // Upload gambar baru jika ada
         if ($request->hasFile('image')) {
             $this->deleteImage($recipe->image_url); // Hapus gambar lama
-            $recipe->image_url = $this->uploadImage($request); // Simpan gambar baru
+            $validatedData['image_url'] = $this->uploadImage($request); // Simpan gambar baru
         }
 
         // Perbarui data resep
-        $recipe->update([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'ingredients' => $request->input('ingredients'),
-            'instructions' => $request->input('instructions'),
-            'image_url' => $recipe->image_url,
-        ]);
+        $recipe->update($validatedData);
 
-        return redirect()->route('recipes.show', $id)->with('success', 'Resep berhasil diperbarui!');
+        return redirect()->route('recipes.show', $recipe->id)->with('success', 'Resep berhasil diperbarui!');
     }
 
     // Menghapus resep
