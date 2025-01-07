@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\RecipeSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +35,20 @@ Route::get('/', [RecipeController::class, 'index'])->name('index');
 
 Route::get('/home', [RecipeController::class, 'home'])->middleware('auth')->name('home');
 Route::get('/detail-recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/bookmark/add', [BookmarkController::class, 'add'])->name('bookmark.add');
+    Route::get('/bookmark', [BookmarkController::class, 'index'])->name('bookmark.index');
+    Route::post('/bookmark/remove', [BookmarkController::class, 'remove'])->name('bookmark.remove');
+});
+
+Route::get('/search-recipe', [RecipeSearchController::class, 'index'])->name('search-recipe');
+
+Route::get('/add-recipe', [RecipeController::class, 'create'])->name('recipes.create');
+Route::post('/add-recipe', [RecipeController::class, 'store'])->name('recipes.store');
+
+Route::delete('/recipes/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+Route::get('/recipes/{id}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+Route::put('/recipes/{id}', [RecipeController::class, 'update'])->name('recipes.update');
+

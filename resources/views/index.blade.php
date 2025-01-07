@@ -38,7 +38,7 @@
                 @foreach ($recipes as $recipe)
                     <div class="recipe-card">
                         <img src="{{ $recipe->image_url }}" alt="{{ $recipe->title }}">
-                        <h3><a href="/recipe/{{ $recipe->id }}">{{ $recipe->title }}</a></h3>
+                        <h3><a href="/detail-recipe/{{ $recipe->id }}">{{ $recipe->title }}</a></h3>
                         <p class="description">{{ \Illuminate\Support\Str::limit($recipe->description, 100) }}</p>
                     </div>
                 @endforeach
