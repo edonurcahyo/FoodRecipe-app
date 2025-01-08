@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class RecipeController extends Controller
 {
@@ -25,11 +24,7 @@ class RecipeController extends Controller
     // Menampilkan detail resep berdasarkan ID
     public function show($id)
     {
-        $recipe = Recipe::find($id);
-
-        if (!$recipe) {
-            return redirect()->route('home')->with('error', 'Resep tidak ditemukan.');
-        }
+        $recipe = Recipe::findOrFail($id);
 
         return view('recipes.detail', compact('recipe'));
     }
@@ -43,12 +38,14 @@ class RecipeController extends Controller
     // Menyimpan resep baru ke database
     public function store(Request $request)
     {
-        // Validasi input
+        // Validate input
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'ingredients' => 'required|string',
             'instructions' => 'required|string',
+            'category' => 'nullable|string|max:100',
+            'user_id' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ], [
             'title.required' => 'Judul resep wajib diisi.',
@@ -60,15 +57,22 @@ class RecipeController extends Controller
             'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
+        // Handle image upload
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('uploads', 'public');
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads'), $imageName);
+            $validatedData['image_url'] = 'uploads/' . $imageName;
         } else {
-            $imagePath = null;
+            $validatedData['image_url'] = null;
         }
-        
+
+        // Save the recipe to the database
+        Recipe::create($validatedData);
 
         return redirect()->route('home')->with('success', 'Resep berhasil ditambahkan!');
     }
+
 
     // Menampilkan formulir edit resep
     public function edit($id)
@@ -88,13 +92,25 @@ class RecipeController extends Controller
             'description' => 'required|string',
             'ingredients' => 'required|string',
             'instructions' => 'required|string',
+            'category' => 'nullable|string|max:100',
+            'user_id' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         // Upload gambar baru jika ada
         if ($request->hasFile('image')) {
-            $this->deleteImage($recipe->image_url); // Hapus gambar lama
-            $validatedData['image_url'] = $this->uploadImage($request); // Simpan gambar baru
+            // Hapus gambar lama jika ada
+            if ($recipe->image_url && file_exists(public_path($recipe->image_url))) {
+                unlink(public_path($recipe->image_url));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads'), $imageName);
+
+            $validatedData['image_url'] = 'uploads/' . $imageName;
+        } else {
+            $validatedData['image_url'] = $recipe->image_url; // Gunakan gambar lama jika tidak diunggah gambar baru
         }
 
         // Perbarui data resep
@@ -103,38 +119,25 @@ class RecipeController extends Controller
         return redirect()->route('recipes.show', $recipe->id)->with('success', 'Resep berhasil diperbarui!');
     }
 
+
     // Menghapus resep
     public function destroy($id)
     {
-        $recipe = Recipe::find($id);
-
-        if (!$recipe) {
-            return redirect()->route('home')->with('error', 'Resep tidak ditemukan.');
-        }
+        $recipe = Recipe::findOrFail($id);
 
         // Hapus gambar jika ada
-        $this->deleteImage($recipe->image_url);
+        if ($recipe->image_url && file_exists(public_path($recipe->image_url))) {
+            unlink(public_path($recipe->image_url));
+        }
 
-        // Hapus data dari database
+        // Hapus data terkait (contoh: bookmarks jika ada hubungan)
+        if (method_exists($recipe, 'bookmarks')) {
+            $recipe->bookmarks()->delete();
+        }
+
+        // Hapus resep
         $recipe->delete();
 
-        return redirect()->route('home')->with('success', 'Resep berhasil dihapus.');
-    }
-
-    // Fungsi untuk mengunggah gambar
-    private function uploadImage(Request $request)
-    {
-        if ($request->hasFile('image')) {
-            return $request->file('image')->store('uploads', 'public');
-        }
-        return null;
-    }
-
-    // Fungsi untuk menghapus gambar
-    private function deleteImage($imagePath)
-    {
-        if ($imagePath && Storage::exists('public/' . $imagePath)) {
-            Storage::delete('public/' . $imagePath);
-        }
+        return redirect()->route('home')->with('success', 'Resep berhasil dihapus!');
     }
 }

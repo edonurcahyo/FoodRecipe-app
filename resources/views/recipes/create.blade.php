@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Resep</title>
-    <link rel="stylesheet" href="{{ asset('css/add.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/add.css') }}">
     <link rel="shortcut icon" href="{{ asset('image/icon.png') }}" type="image/x-icon">
 </head>
 <body>

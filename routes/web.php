@@ -51,3 +51,5 @@ Route::get('/search-recipe', [RecipeSearchController::class, 'index'])->name('se
 
 Route::get('/add-recipe', [RecipeController::class, 'create'])->name('recipes.create');
 Route::post('/add-recipe', [RecipeController::class, 'store'])->name('recipes.store');
+
+Route::put('/recipes/{id}', [RecipeController::class, 'update'])->name('recipes.update');
