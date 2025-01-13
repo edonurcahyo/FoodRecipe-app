@@ -11,7 +11,13 @@ class Recipe extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'description', 'ingredients', 'image'];
+    protected $fillable = [
+        'title',
+        'description',
+        'ingredients',
+        'instructions',
+        'image_url',
+    ];
 
     public function bookmarks()
     {

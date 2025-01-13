@@ -21,46 +21,52 @@
         </div>
     </header>
 
+    <!-- @extends('layouts.app') -->
+
+    <!-- @section('content') -->
     <div class="container">
-        <h1 class="title">Edit Resep</h1>
+        <h1>Edit Recipe</h1>
+
         <form action="{{ route('recipes.update', $recipe->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
             <div class="form-group">
-                <label for="title">Judul Resep</label>
-                <input type="text" id="title" name="title" value="{{ old('title', $recipe->title) }}" required>
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-control" value="{{ $recipe->title }}" required>
             </div>
 
             <div class="form-group">
-                <label for="description">Deskripsi</label>
-                <textarea id="description" name="description" required>{{ old('description', $recipe->description) }}</textarea>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control" required>{{ $recipe->description }}</textarea>
             </div>
 
             <div class="form-group">
-                <label for="ingredients">Bahan</label>
-                <textarea id="ingredients" name="ingredients" required>{{ old('ingredients', $recipe->ingredients) }}</textarea>
+                <label for="ingredients">Ingredients</label>
+                <textarea id="ingredients" name="ingredients" class="form-control" required>{{ $recipe->ingredients }}</textarea>
             </div>
 
             <div class="form-group">
-                <label for="instructions">Instruksi</label>
-                <textarea id="instructions" name="instructions" required>{{ old('instructions', $recipe->instructions) }}</textarea>
+                <label for="instructions">Instructions</label>
+                <textarea id="instructions" name="instructions" class="form-control" required>{{ $recipe->instructions }}</textarea>
             </div>
 
             <div class="form-group">
-                <label for="image">Gambar Baru (opsional)</label>
-                <input type="file" id="image" name="image" accept="image/*">
+                <label for="image">New Image</label>
+                <input type="file" id="image" name="image" class="form-control">
             </div>
 
             @if ($recipe->image_url)
-                <div class="current-image">
-                    <p>Gambar Saat Ini:</p>
-                    <img src="{{ asset('storage/' . $recipe->image_url) }}" alt="Gambar Resep" class="recipe-image">
-                </div>
+            <div class="form-group">
+                <p>Current Image:</p>
+                <img src="{{ asset('storage/' . $recipe->image_url) }}" alt="Recipe Image" class="img-thumbnail" style="max-width: 200px;">
+            </div>
             @endif
 
-            <button type="submit" class="btn-submit">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-primary">Update Recipe</button>
         </form>
     </div>
+    @endsection
+
 </body>
 </html>

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/x-icon">
-    <script src="{{ asset('js/theme.js') }}"></script>
+    <script src="{{ asset('js/theme.js') }}" defer></script>
 </head>
 <body>
     <header>
@@ -26,7 +26,7 @@
         </div>
     </header>
 
-    <div class="container">
+    <main class="container">
         <h1>Daftar Resep</h1>
         <div class="add-recipe-btn">
             <a href="{{ route('recipes.create') }}" class="btn-add">Tambah Resep Baru</a>
@@ -43,14 +43,16 @@
                         @else
                             <p>No image available</p>
                         @endif
-
                         <h2>
                             <a href="{{ route('recipes.show', $recipe->id) }}">{{ $recipe->title }}</a>
                         </h2>
                         <p>{!! nl2br(e($recipe->description)) !!}</p>
-
+                        
                         <!-- Tombol Edit -->
-                        <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn btn-edit" style="display: inline-block;">Edit</a>
+                        <form action="{{ route('recipes.edit', $recipe->id) }}" method="GET" style="display: inline-block;">
+                            @csrf
+                            <button type="submit" class="btn btn-edit">Edit</button>
+                        </form>
 
                         <!-- Tombol Hapus -->
                         <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline-block;">
@@ -69,8 +71,6 @@
                 @endforeach
             @endif
         </div>
-    </div>
-
-    <script src="{{ asset('js/theme.js') }}"></script>
+    </main>
 </body>
 </html>

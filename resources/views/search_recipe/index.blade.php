@@ -54,8 +54,10 @@
             <div class="recipe-cards">
                 @foreach ($recommendations as $recipe)
                     <div class="recipe-card">
-                        @if (!empty($recipe->image_url))
-                            <img src="{{ asset('images/' . $recipe->image_url) }}" alt="Gambar {{ $recipe->title }}" class="recipe-image">
+                    @if (!empty($recipe->image_url))
+                            <img src="{{ $recipe->image_url }}" alt="{{ $recipe->title }}" class="recipe-image">
+                        @else
+                            <p>No image available</p>
                         @endif
                         <h3><a href="/detail-recipe/{{ $recipe->id }}">{{ $recipe->title }}</a></h3>
                         <p>{{ Str::limit($recipe->description, 100) }}</p>

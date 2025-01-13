@@ -38,11 +38,11 @@
         <div id="recipe-list">
             @forelse ($bookmarks as $recipe)
                 <div class="recipe-card">
-                    @if (!empty($recipe->image_url))
-                        <img src="{{ asset('images/' . $recipe->image_url) }}" alt="Gambar {{ $recipe->title }}" class="recipe-image">
-                    @else
-                        <p>No image available</p>
-                    @endif
+                @if (!empty($recipe->image_url))
+                    <img src="{{ $recipe->image_url }}" alt="{{ $recipe->title }}" class="recipe-image">
+                @else
+                    <p>No image available</p>
+                @endif
                     <h2>
                         <a href="/detail-recipe/{{ $recipe->id }}">{{ $recipe->title }}</a>
                     </h2>
