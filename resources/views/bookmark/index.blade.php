@@ -1,74 +1,125 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halaman Bookmark</title>
-    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-    <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/x-icon">
-    <script src="{{ asset('js/theme.js') }}"></script>
-</head>
-<body>
-    <header>
-        <div class="navbar">
-            <div class="logo">Cooking Recipes</div>
-            <nav>
-                <a href="{{ route('home') }}">Home</a>
-                <a href="/search-recipe">Pencarian Resep</a>
-                <a href="/bookmark" class="active">Bookmark</a>
-                <a href="/logout">Logout</a>
-                <button id="theme-toggle" aria-label="Toggle theme">
-                    <span class="icon-sun" style="display: none;">☀️</span>
-                    <span class="icon-moon">🌙</span>
-                </button>
-            </nav>
+@extends('layouts.app')
+
+@section('title', 'Bookmark - Cooking Recipes')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/bookmark.css') }}">
+@endpush
+
+@section('content')
+    {{-- ===== Breadcrumb ===== --}}
+    <nav class="breadcrumb">
+        <a href="{{ route('home') }}">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">Bookmark</span>
+    </nav>
+
+    {{-- ===== Page Header ===== --}}
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">
+                <span class="title-icon">🔖</span>
+                Resep yang Ditandai
+                @if ($bookmarks->isNotEmpty())
+                    <span class="section-count">{{ $bookmarks->count() }}</span>
+                @endif
+            </h1>
+            <p class="page-subtitle">Koleksi resep favorit yang kamu simpan</p>
         </div>
+        <a href="{{ route('home') }}" class="btn-back">← Kembali ke Home</a>
     </header>
 
-    <div class="container">
-        <h1 class="title">Resep yang Ditandai</h1>
+    {{-- ===== Daftar Bookmark ===== --}}
+    <div id="recipe-list">
+        @forelse ($bookmarks as $recipe)
+            <article class="recipe-card">
+                <div class="recipe-card-image">
+                    @if (!empty($recipe->image_url))
+                        <img src="{{ asset($recipe->image_url) }}" alt="{{ $recipe->title }}" loading="lazy">
+                    @else
+                        <div class="recipe-image-placeholder">
+                            <span>🍳</span>
+                            <small>No image</small>
+                        </div>
+                    @endif
 
-        @if (session('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
-            </div>
-        @endif
-
-        <div id="recipe-list">
-            @forelse ($bookmarks as $recipe)
-                <div class="recipe-card">
-                @if (!empty($recipe->image_url))
-                    <img src="{{ $recipe->image_url }}" alt="{{ $recipe->title }}" class="recipe-image">
-                @else
-                    <p>No image available</p>
-                @endif
-                    <h2>
-                        <a href="/detail-recipe/{{ $recipe->id }}">{{ $recipe->title }}</a>
-                    </h2>
-                    <p>{!! nl2br(e($recipe->description)) !!}</p>
-                    <form action="{{ route('bookmark.remove') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
-                        <button type="submit" class="btn btn-delete">Hapus dari Bookmark</button>
-                    </form>
+                    {{-- Badge bookmark di atas gambar --}}
+                    <span class="bookmark-badge" title="Ditandai">🔖</span>
                 </div>
-            @empty
-                <p>Tidak ada resep yang ditandai.</p>
-            @endforelse
-        </div>
-    </div>
-    
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const iconSun = document.querySelector('.icon-sun');
-        const iconMoon = document.querySelector('.icon-moon');
 
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            iconSun.style.display = iconSun.style.display === 'none' ? '' : 'none';
-            iconMoon.style.display = iconMoon.style.display === 'none' ? '' : 'none';
-        });
+                <div class="recipe-card-body">
+                    <h3>
+                        <a href="{{ route('recipes.show', $recipe->id) }}">{{ $recipe->title }}</a>
+                    </h3>
+
+                    @if (!empty($recipe->category))
+                        <span class="recipe-category">🏷️ {{ $recipe->category }}</span>
+                    @endif
+
+                    <p class="recipe-description">
+                        {!! nl2br(e(\Illuminate\Support\Str::limit($recipe->description, 120))) !!}
+                    </p>
+
+                    <div class="recipe-actions">
+                        <a href="{{ route('recipes.show', $recipe->id) }}" class="btn btn-view">
+                            👁️ Lihat Resep
+                        </a>
+
+                        <form action="{{ route('bookmark.remove') }}" method="POST" class="inline-form">
+                            @csrf
+                            <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
+                            <button
+                                type="submit"
+                                class="btn btn-delete"
+                                onclick="return confirm('Hapus "{{ $recipe->title }}" dari bookmark?')"
+                            >
+                                ✕ Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        @empty
+            <div class="empty-state">
+                <div class="empty-state-icon">🔖</div>
+                <h3>Belum ada resep yang ditandai</h3>
+                <p>Simpan resep favoritmu dengan menekan tombol bookmark di halaman resep.</p>
+                <a href="{{ route('home') }}" class="btn-add">
+                    <span class="btn-add-icon">+</span>
+                    Jelajahi Resep
+                </a>
+            </div>
+        @endforelse
+    </div>
+
+    {{-- ===== Toast Notification ===== --}}
+    @if (session('message'))
+        <div class="toast toast-success" id="toast" role="alert">
+            <span class="toast-icon">✅</span>
+            <span class="toast-message">{{ session('message') }}</span>
+            <button type="button" class="toast-close" onclick="document.getElementById('toast').remove()">✕</button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="toast toast-error" id="toast" role="alert">
+            <span class="toast-icon">⚠️</span>
+            <span class="toast-message">{{ session('error') }}</span>
+            <button type="button" class="toast-close" onclick="document.getElementById('toast').remove()">✕</button>
+        </div>
+    @endif
+@endsection
+
+@push('scripts')
+    <script>
+        // Auto-hilang setelah 4 detik
+        (function () {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            setTimeout(function () {
+                toast.classList.add('toast-hide');
+                setTimeout(function () { toast.remove(); }, 400);
+            }, 4000);
+        })();
     </script>
-</body>
-</html>
+@endpush

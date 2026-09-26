@@ -1,76 +1,108 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halaman Home</title>
-    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-    <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/x-icon">
-    <script src="{{ asset('js/theme.js') }}" defer></script>
-</head>
-<body>
-    <header>
-        <div class="navbar">
-            <div class="logo">Cooking Recipes</div>
-            <nav>
-                <a href="{{ route('home') }}" class="active">Home</a>
-                <a href="{{ route('search-recipe') }}">Pencarian Resep</a>
-                <a href="{{ route('bookmark.index') }}">Bookmark</a>
-                <a href="/">Logout</a>
-                <button id="theme-toggle" aria-label="Toggle theme">
-                    <span class="icon-sun" style="display: none;">☀️</span>
-                    <span class="icon-moon">🌙</span>
-                </button>
-            </nav>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <main class="container">
-        <h1>Daftar Resep</h1>
-        <div class="add-recipe-btn">
-            <a href="{{ route('recipes.create') }}" class="btn-add">Tambah Resep Baru</a>
-        </div>
+@section('title', 'Daftar Resep - Cooking Recipes')
 
-        <div id="recipe-list">
-            @if ($recipes->isEmpty())
-                <p>Tidak ada resep yang tersedia.</p>
-            @else
-                @foreach ($recipes as $recipe)
-                    <div class="recipe-card">
+@section('content')
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Daftar Resep</h1>
+            <p class="page-subtitle">Kelola dan jelajahi koleksi resep kamu</p>
+        </div>
+        <a href="{{ route('recipes.create') }}" class="btn-add">
+            <span class="btn-add-icon">＋</span>
+            Tambah Resep Baru
+        </a>
+    </div>
+
+    <div id="recipe-list">
+        @if ($recipes->isEmpty())
+            <div class="empty-state">
+                <div class="empty-state-icon">🍽️</div>
+                <h3>Belum ada resep</h3>
+                <p>Mulai dengan menambahkan resep pertamamu!</p>
+                <a href="{{ route('recipes.create') }}" class="btn-add">Tambah Resep</a>
+            </div>
+        @else
+            @foreach ($recipes as $recipe)
+                <article class="recipe-card">
+                    <div class="recipe-card-image">
                         @if (!empty($recipe->image_url))
-                            <img src="{{ $recipe->image_url }}" alt="{{ $recipe->title }}" class="recipe-image">
+                            <img src="{{ asset($recipe->image_url) }}" alt="{{ $recipe->title }}" loading="lazy">
                         @else
-                            <p>No image available</p>
+                            <div class="recipe-image-placeholder">
+                                <span>🍳</span>
+                                <small>No image</small>
+                            </div>
                         @endif
+                    </div>
+
+                    <div class="recipe-card-body">
                         <h2>
                             <a href="{{ route('recipes.show', $recipe->id) }}">{{ $recipe->title }}</a>
                         </h2>
-                        <p>{!! nl2br(e($recipe->description)) !!}</p>
-                        
-                        <!-- Tombol Edit -->
-                        <form action="{{ route('recipes.edit', $recipe->id) }}" method="GET" style="display: inline-block;">
-                            @csrf
-                            <button type="submit" class="btn btn-edit">Edit</button>
-                        </form>
+                        <p class="recipe-description">{!! nl2br(e(\Illuminate\Support\Str::limit($recipe->description, 120))) !!}</p>
 
-                        <!-- Tombol Hapus -->
-                        <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus resep ini?')">Hapus</button>
-                        </form>
+                        <div class="recipe-actions">
+                            <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn btn-edit">
+                                <span class="btn-icon">✏️</span>
+                                <span>Edit</span>
+                            </a>
 
-                        <!-- Tombol Tambah ke Bookmark -->
-                        <form action="{{ route('bookmark.add') }}" method="POST" style="display: inline-block;">
-                            @csrf
-                            <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
-                            <button type="submit" class="btn btn-bookmark">Tambahkan ke Bookmark</button>
-                        </form>
+                            <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" class="inline-form">
+                                @csrf
+                                @method('DELETE')
+                                <button
+                                    type="submit"
+                                    class="btn btn-delete"
+                                    onclick="return confirm('Yakin ingin menghapus resep &quot;{{ $recipe->title }}&quot;?')"
+                                >
+                                    <span class="btn-icon">🗑️</span>
+                                    <span>Hapus</span>
+                                </button>
+                            </form>
+
+                            <form action="{{ route('bookmark.add') }}" method="POST" class="inline-form">
+                                @csrf
+                                <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
+                                <button type="submit" class="btn btn-bookmark">
+                                    <span class="btn-icon">🔖</span>
+                                    <span>Simpan</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                @endforeach
-            @endif
+                </article>
+            @endforeach
+        @endif
+    </div>
+
+    {{-- ===== Toast Notification ===== --}}
+    @if (session('message'))
+        <div class="toast toast-success" id="toast" role="alert">
+            <span class="toast-icon">✅</span>
+            <span class="toast-message">{{ session('message') }}</span>
+            <button type="button" class="toast-close" onclick="document.getElementById('toast').remove()">✕</button>
         </div>
-    </main>
-</body>
-</html>
+    @endif
+
+    @if (session('error'))
+        <div class="toast toast-error" id="toast" role="alert">
+            <span class="toast-icon">⚠️</span>
+            <span class="toast-message">{{ session('error') }}</span>
+            <button type="button" class="toast-close" onclick="document.getElementById('toast').remove()">✕</button>
+        </div>
+    @endif
+@endsection
+
+@push('scripts')
+    <script>
+        (function () {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            setTimeout(function () {
+                toast.classList.add('toast-hide');
+                setTimeout(function () { toast.remove(); }, 400);
+            }, 4000);
+        })();
+    </script>
+@endpush

@@ -10,46 +10,48 @@ use App\Http\Controllers\RecipeSearchController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Di sini Anda dapat mendaftarkan rute aplikasi Anda. Rute ini akan dimuat
-| oleh RouteServiceProvider dalam grup yang berisi middleware "web".
-|
 */
 
-// Rute Halaman Utama
+// ===== Public Routes =====
 Route::get('/', [RecipeController::class, 'index'])->name('index');
 
-// Rute Resep
-Route::resource('recipes', RecipeController::class);
-Route::get('/detail-recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+// ===== Auth Routes =====
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 
-// Rute Autentikasi
-Route::get('/login', function () {
-    return view('auth.login'); 
-})->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.process');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.process');
+});
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.process');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-// Rute Halaman Home
-Route::get('/home', [RecipeController::class, 'home'])->middleware('auth')->name('home');
+// ===== Protected Routes (butuh login) =====
+Route::middleware('auth')->group(function () {
+    // Home
+    Route::get('/home', [RecipeController::class, 'home'])->name('home');
 
-// Rute Bookmark (Dilindungi oleh Middleware `auth`)
-Route::middleware(['auth'])->group(function () {
-    Route::post('/bookmark/add', [BookmarkController::class, 'add'])->name('bookmark.add');
+    // Resep (CRUD)
+    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+    // Bookmark
     Route::get('/bookmark', [BookmarkController::class, 'index'])->name('bookmark.index');
+    Route::post('/bookmark/add', [BookmarkController::class, 'add'])->name('bookmark.add');
     Route::post('/bookmark/remove', [BookmarkController::class, 'remove'])->name('bookmark.remove');
 });
 
-// Rute Pencarian Resep
+// ===== Public Recipe Detail (bisa diakses tanpa login) =====
+Route::get('/detail-recipe/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+
+// ===== Search (public) =====
 Route::get('/search-recipe', [RecipeSearchController::class, 'index'])->name('search-recipe');
-
-
-Route::get('/add-recipe', [RecipeController::class, 'create'])->name('recipes.create');
-Route::post('/add-recipe', [RecipeController::class, 'store'])->name('recipes.store');
-
-Route::put('/recipes/{id}', [RecipeController::class, 'update'])->name('recipes.update');
