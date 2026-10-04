@@ -7,31 +7,32 @@
 @endpush
 
 @section('content')
-    {{-- ===== Breadcrumb ===== --}}
-    <nav class="breadcrumb">
-        <a href="{{ route('home') }}">Home</a>
-        <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-current">Bookmark</span>
-    </nav>
+    <div class="bookmark-page">
+        {{-- ===== Breadcrumb ===== --}}
+        <nav class="breadcrumb">
+            <a href="{{ route('home') }}">Home</a>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current">Bookmark</span>
+        </nav>
 
-    {{-- ===== Page Header ===== --}}
-    <header class="page-header">
-        <div>
-            <h1 class="page-title">
-                <span class="title-icon">🔖</span>
-                Resep yang Ditandai
-                @if ($bookmarks->isNotEmpty())
-                    <span class="section-count">{{ $bookmarks->count() }}</span>
-                @endif
-            </h1>
-            <p class="page-subtitle">Koleksi resep favorit yang kamu simpan</p>
-        </div>
-        <a href="{{ route('home') }}" class="btn-back">← Kembali ke Home</a>
-    </header>
+        {{-- ===== Page Header ===== --}}
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <span class="title-icon">🔖</span>
+                    Resep yang Ditandai
+                    @if ($bookmarks->isNotEmpty())
+                        <span class="section-count">{{ $bookmarks->count() }}</span>
+                    @endif
+                </h1>
+                <p class="page-subtitle">Koleksi resep favorit yang kamu simpan</p>
+            </div>
+            <a href="{{ route('home') }}" class="btn-back">← Kembali ke Home</a>
+        </header>
 
-    {{-- ===== Daftar Bookmark ===== --}}
-    <div id="recipe-list">
-        @forelse ($bookmarks as $recipe)
+        {{-- ===== Daftar Bookmark ===== --}}
+        <div id="recipe-list">
+            @forelse ($bookmarks as $recipe)
             <article class="recipe-card">
                 <div class="recipe-card-image">
                     @if (!empty($recipe->image_url))
@@ -79,17 +80,18 @@
                     </div>
                 </div>
             </article>
-        @empty
-            <div class="empty-state">
-                <div class="empty-state-icon">🔖</div>
-                <h3>Belum ada resep yang ditandai</h3>
-                <p>Simpan resep favoritmu dengan menekan tombol bookmark di halaman resep.</p>
-                <a href="{{ route('home') }}" class="btn-add">
-                    <span class="btn-add-icon">+</span>
-                    Jelajahi Resep
-                </a>
-            </div>
-        @endforelse
+            @empty
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔖</div>
+                    <h3>Belum ada resep yang ditandai</h3>
+                    <p>Simpan resep favoritmu dengan menekan tombol bookmark di halaman resep.</p>
+                    <a href="{{ route('home') }}" class="btn-add">
+                        <span class="btn-add-icon">+</span>
+                        Jelajahi Resep
+                    </a>
+                </div>
+            @endforelse
+        </div>
     </div>
 
     {{-- ===== Toast Notification ===== --}}

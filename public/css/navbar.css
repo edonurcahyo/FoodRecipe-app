@@ -1,5 +1,5 @@
 /* ===== Navbar ===== */
-header {
+body > header {
     background-color: var(--color-header);
     border-bottom: 1px solid var(--color-border);
     position: sticky;

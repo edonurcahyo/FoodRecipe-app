@@ -50,7 +50,9 @@ body {
     flex-direction: column;
     justify-content: space-between;
     padding: 48px 56px;
-    background: linear-gradient(135deg, #ff6347 0%, #ff8c42 50%, #f8ce12 100%);
+    background:
+        linear-gradient(105deg, rgba(24, 29, 22, 0.82), rgba(24, 29, 22, 0.58)),
+        url('../image/bg.png') 42% center / cover no-repeat;
     color: #ffffff;
     position: relative;
     overflow: hidden;
@@ -78,6 +80,11 @@ body {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
     border-radius: 50%;
     pointer-events: none;
+}
+
+.auth-brand::before,
+.auth-brand::after {
+    display: none;
 }
 
 .auth-brand-logo {
@@ -140,8 +147,7 @@ body {
     font-size: 0.975rem;
     background-color: rgba(255, 255, 255, 0.15);
     padding: 12px 18px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -174,7 +180,7 @@ body {
     padding: 40px;
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: 8px;
     box-shadow: var(--shadow-md);
 }
 
@@ -260,7 +266,7 @@ body {
     width: 100%;
     padding: 13px 44px 13px 44px;
     border: 1.5px solid var(--color-border);
-    border-radius: 12px;
+    border-radius: 8px;
     font-family: inherit;
     font-size: 0.95rem;
     color: var(--color-text);
@@ -307,6 +313,11 @@ body {
 
 .toggle-password:hover {
     background-color: var(--color-border);
+}
+
+.auth-layout :focus-visible {
+    outline: 3px solid #d68a42;
+    outline-offset: 3px;
 }
 
 .form-error {
@@ -364,23 +375,22 @@ body {
     width: 100%;
     padding: 14px 20px;
     margin-top: 8px;
-    background: linear-gradient(135deg, var(--color-primary), #ff8c42);
+    background: var(--color-primary-dark);
     color: #ffffff;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-family: inherit;
     font-size: 0.975rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(255, 99, 71, 0.3);
+    box-shadow: none;
     transition: transform var(--transition), box-shadow var(--transition);
     position: relative;
     overflow: hidden;
 }
 
 .btn-auth:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(255, 99, 71, 0.4);
+    background: #c84631;
 }
 
 .btn-auth:active {
@@ -459,5 +469,9 @@ body {
 @media (max-width: 400px) {
     .auth-brand-features {
         display: none;
+    }
+
+    .auth-card {
+        padding: 24px 16px;
     }
 }

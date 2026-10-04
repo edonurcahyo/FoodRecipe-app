@@ -8,10 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/homepage.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="shortcut icon" href="{{ asset('image/icon.png') }}" type="image/x-icon">
 </head>
-<body>
+<body class="homepage">
     <header>
         <div class="navbar">
             <a href="/" class="logo">
@@ -41,11 +42,12 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">Welcome to Cooking Recipes</h1>
-                <p class="hero-subtitle">Your go-to place for delicious recipes!</p>
+                <p class="hero-eyebrow">THE HOME COOK'S COLLECTION</p>
+                <h1 class="hero-title">Make room for something delicious.</h1>
+                <p class="hero-subtitle">Fresh inspiration for everyday cooking, one recipe at a time.</p>
                 <div class="hero-actions">
                     <a href="#featured" class="btn btn-primary">Explore Recipes</a>
-                    <a href="/register" class="btn btn-secondary">Get Started</a>
+                    <a href="/register" class="btn btn-secondary">Join the Kitchen</a>
                 </div>
             </div>
         </section>
